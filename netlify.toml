@@ -1,7 +1,7 @@
 [build]
   base = "frontend/hirable-web"
   command = "npm run build"
-  publish = "frontend/hirable-web/dist/hirable-web"
+  publish = "dist/hirable-web"
 
 [[redirects]]
   from = "/*"

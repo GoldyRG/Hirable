@@ -1,0 +1,123 @@
+<div class="login-page">
+  <div class="login-card">
+    <h1>{{ activeTab === 'login' ? 'Sign in to Hirable' : 'Create your account' }}</h1>
+    <p class="subtitle">
+      Create an account so your job applications are saved. Or try a <strong>Demo</strong> without signing in.
+    </p>
+
+    <div *ngIf="errorMessage" class="message-box error" role="alert" aria-live="assertive">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="successMessage" class="message-box success" role="status" aria-live="polite">
+      {{ successMessage }}
+    </div>
+
+    <div class="tab-row">
+      <button
+        type="button"
+        [class.active]="activeTab === 'login'"
+        (click)="switchTab('login')"
+      >
+        Sign In
+      </button>
+      <button
+        type="button"
+        [class.active]="activeTab === 'register'"
+        (click)="switchTab('register')"
+      >
+        Create Account
+      </button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="login-form" novalidate>
+      <ng-container *ngIf="activeTab === 'login'; else registerFields">
+        <div class="field">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            name="loginEmail"
+            type="email"
+            [(ngModel)]="loginModel.email"
+            class="with-icon icon-mail"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input
+            id="password"
+            name="loginPassword"
+            type="password"
+            [(ngModel)]="loginModel.password"
+            class="with-icon icon-lock"
+            required
+          />
+        </div>
+      </ng-container>
+
+      <ng-template #registerFields>
+        <div class="field">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            name="registerEmail"
+            type="email"
+            [(ngModel)]="registerModel.email"
+            class="with-icon icon-mail"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input
+            id="password"
+            name="registerPassword"
+            type="password"
+            [(ngModel)]="registerModel.password"
+            class="with-icon icon-lock"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="confirmPassword">Confirm Password</label>
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            [(ngModel)]="registerModel.confirmPassword"
+            class="with-icon icon-lock"
+            required
+          />
+        </div>
+      </ng-template>
+
+      <button
+        type="submit"
+        class="btn-primary login-btn"
+        [disabled]="activeTab === 'login' ? isLoginDisabled : isRegisterDisabled"
+      >
+        {{ activeTab === 'login' ? 'Sign In' : 'Create Account' }}
+      </button>
+      
+      <p class="or-text">or</p>
+
+      <!-- Demo mode link -->
+      <a
+        routerLink="/jobs"
+        class="testmode-link"
+      >
+        Try the Demo (no login)
+      </a>
+    </form>
+
+    <p class="helper">
+      <strong>How this works:</strong><br />
+      - Changes made while logged in are saved as your own applications.<br />
+      - Changes made in <em>Demo Mode</em> use sample data and are not saved
+      once you leave Demo Mode.
+    </p>
+  </div>
+</div>

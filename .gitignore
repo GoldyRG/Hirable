@@ -1,0 +1,11 @@
+# General build output
+bin/
+obj/
+
+# Node modules and dist
+node_modules/
+dist/
+
+# IDE/editor
+.vscode/
+.DS_Store

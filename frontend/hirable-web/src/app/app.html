@@ -1,0 +1,52 @@
+<div class="app-shell">
+  <!-- Top navigation -->
+  <header class="top-nav">
+    <div class="brand" routerLink="/">
+      <div class="brand-title">Hirable</div>
+      <div class="brand-tagline">- a Job Application Tracker</div>
+    </div>
+
+    <nav class="nav-links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        Home
+      </a>
+      <a routerLink="/jobs" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        My Applications
+      </a>
+      <a routerLink="/job-board" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        Job Board
+      </a>
+      <ng-container *ngIf="!(auth.isLoggedIn$ | async); else loggedInLinks">
+        <a
+          routerLink="/login"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          Login
+        </a>
+        <a
+          routerLink="/register"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          Register
+        </a>
+      </ng-container>
+
+      <ng-template #loggedInLinks>
+        <button type="button" class="logout-btn" (click)="auth.logout()">
+          Logout
+        </button>
+      </ng-template>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <div class="content-container">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+  <footer class="footer">
+    <span>© {{ currentYear }} Hirable. All rights reserved.</span>
+  </footer>
+</div>

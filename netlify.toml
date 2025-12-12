@@ -1,0 +1,9 @@
+[build]
+  base = "frontend/hirable-web"
+  command = "npm run build"
+  publish = "frontend/hirable-web/dist/hirable-web"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,614 @@
+<div class="jobs-page">
+  <!-- Page header -->
+  <div class="page-header">
+    <div>
+      <h1>Hirable Job Applications</h1>
+      <p class="page-subtitle">
+        Track your applications, update statuses, and generate a summary report.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn-primary"
+      (click)="openSummaryReport()"
+    >
+      View Summary Report
+    </button>
+  </div>
+
+  <!-- Main content layout -->
+  <div class="applications-layout">
+    <div class="applications-main">
+
+      <!--Test Mode banner -->
+      <section
+        *ngIf="isTestMode"
+        class="mode-banner"
+      >
+        <div class="mode-pill">Demo</div>
+        <div class="mode-text">
+          You’re currently trying Hirable with sample applications.
+          Changes here are for demo only and won’t be saved to an account.
+          <a routerLink="/login" class="mode-link">
+            Sign in to save your own applications
+          </a>.
+        </div>
+      </section>
+
+      <!-- New Application Form -->
+      <section class="new-app-panel">
+        <h2>Add New Application</h2>
+
+        <form (ngSubmit)="onCreate()" class="new-app-form">
+          <div class="field">
+            <label for="new-company">Company *</label>
+            <input
+              id="new-company"
+              type="text"
+              [(ngModel)]="newApp.companyName"
+              name="newCompany"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="new-title">Job Title *</label>
+            <input
+              id="new-title"
+              type="text"
+              [(ngModel)]="newApp.jobTitle"
+              name="newJobTitle"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="new-status">Status</label>
+            <select
+              id="new-status"
+              [(ngModel)]="newApp.status"
+              name="newStatus"
+            >
+              <option [ngValue]="ApplicationStatus.Applied">Applied</option>
+              <option [ngValue]="ApplicationStatus.PhoneScreen">Phone Screen</option>
+              <option [ngValue]="ApplicationStatus.Interview">Interview</option>
+              <option [ngValue]="ApplicationStatus.Offer">Offer</option>
+              <option [ngValue]="ApplicationStatus.Rejected">Rejected</option>
+              <option [ngValue]="ApplicationStatus.OnHold">On Hold</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="new-date">Applied On</label>
+            <input
+              id="new-date"
+              type="date"
+              [(ngModel)]="newApp.appliedOn"
+              name="newAppliedOn"
+            />
+          </div>
+
+          <div class="field">
+            <label for="new-location">Location</label>
+            <input
+              id="new-location"
+              type="text"
+              [(ngModel)]="newApp.location"
+              name="newLocation"
+            />
+          </div>
+
+          <div class="field">
+            <label for="new-min-salary">Min Salary</label>
+            <div class="currency-input">
+              <span class="currency-prefix">$</span>
+              <input
+                id="new-min-salary"
+                type="number"
+                [(ngModel)]="newApp.minSalary"
+                name="newMinSalary"
+                class="currency-input-field"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="new-max-salary">Max Salary</label>
+            <div class="currency-input">
+              <span class="currency-prefix">$</span>
+              <input
+                id="new-max-salary"
+                type="number"
+                [(ngModel)]="newApp.maxSalary"
+                name="newMaxSalary"
+                class="currency-input-field"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="new-source">Source</label>
+            <input
+              id="new-source"
+              type="text"
+              [(ngModel)]="newApp.source"
+              name="newSource"
+              placeholder="LinkedIn, company site, referral..."
+            />
+          </div>
+
+          <div class="field full-width">
+            <label for="new-notes">Notes</label>
+            <textarea
+              id="new-notes"
+              rows="3"
+              [(ngModel)]="newApp.notes"
+              name="newNotes"
+            ></textarea>
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="btn-primary">
+              Add Application
+            </button>
+            <button
+              type="button"
+              class="btn-secondary"
+              (click)="resetNewApp()"
+            >
+              Reset
+            </button>
+          </div>
+
+          <p
+            *ngIf="newAppError"
+            class="status-message error"
+          >
+            {{ newAppError }}
+          </p>
+        </form>
+      </section>
+
+      <!-- Search Panel -->
+      <section class="search-panel">
+        <h2>Search Applications</h2>
+
+        <form
+          (ngSubmit)="onSearch()"
+          class="search-form"
+        >
+          <div class="field">
+            <label for="query">Search</label>
+            <input
+              id="query"
+              type="text"
+              [(ngModel)]="searchQuery"
+              name="query"
+              placeholder="Company or job title"
+            />
+          </div>
+
+          <div class="field">
+            <label for="location">Location</label>
+            <input
+              id="location"
+              type="text"
+              [(ngModel)]="searchLocation"
+              name="location"
+              placeholder="City, state, or remote"
+            />
+          </div>
+
+          <div class="field">
+            <label for="status">Status</label>
+            <select
+              id="status"
+              [(ngModel)]="searchStatus"
+              name="status"
+            >
+              <option value="">All</option>
+              <option [ngValue]="ApplicationStatus.Applied">Applied</option>
+              <option [ngValue]="ApplicationStatus.PhoneScreen">Phone Screen</option>
+              <option [ngValue]="ApplicationStatus.Interview">Interview</option>
+              <option [ngValue]="ApplicationStatus.Offer">Offer</option>
+              <option [ngValue]="ApplicationStatus.Rejected">Rejected</option>
+              <option [ngValue]="ApplicationStatus.OnHold">On Hold</option>
+            </select>
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="btn-primary search-btn">
+              Search
+            </button>
+            <button
+              type="button"
+              class="btn-secondary search-btn"
+              (click)="clearSearch()"
+            >
+              Clear
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Status / Errors -->
+      <section
+        *ngIf="isLoading"
+        class="status-message"
+      >
+        Loading job applications...
+      </section>
+
+      <section
+        *ngIf="errorMessage"
+        class="status-message error"
+      >
+        {{ errorMessage }}
+      </section>
+
+      <!-- Job Applications Cards -->
+      <section
+        *ngIf="!isLoading && jobs.length > 0"
+        class="cards-wrapper"
+      >
+        <div class="job-cards-grid">
+          <article
+            class="job-card"
+            *ngFor="let job of jobs"
+          >
+            <!-- Header: title, company, status pill -->
+            <header class="job-card-header">
+              <div>
+                <h3>{{ job.jobTitle }}</h3>
+                <p class="job-card-company">
+                  {{ job.companyName }}
+                  <span *ngIf="job.location"> · {{ job.location }}</span>
+                </p>
+              </div>
+
+              <span
+                class="status-pill"
+                [ngClass]="{
+                  'status-applied': job.status === ApplicationStatus.Applied,
+                  'status-phone': job.status === ApplicationStatus.PhoneScreen,
+                  'status-interview': job.status === ApplicationStatus.Interview,
+                  'status-offer': job.status === ApplicationStatus.Offer,
+                  'status-rejected': job.status === ApplicationStatus.Rejected,
+                  'status-onhold': job.status === ApplicationStatus.OnHold
+                }"
+              >
+                {{ getStatusLabel(job.status) }}
+              </span>
+            </header>
+
+            <!-- Body: key details -->
+            <div class="job-card-body">
+              <div class="job-card-row">
+                <span class="label">Applied On</span>
+                <span>{{ job.appliedOn | date : 'shortDate' }}</span>
+              </div>
+
+              <div class="job-card-row">
+                <span class="label">Salary Range</span>
+                <span>
+                  <ng-container *ngIf="job.minSalary || job.maxSalary; else noSalaryCard">
+                    {{ formatCurrency(job.minSalary) }} - {{ formatCurrency(job.maxSalary) }}
+                  </ng-container>
+                  <ng-template #noSalaryCard>N/A</ng-template>
+                </span>
+              </div>
+
+              <div class="job-card-row">
+                <span class="label">Source</span>
+                <span>{{ job.source || '—' }}</span>
+              </div>
+
+              <div class="job-card-row">
+                <span class="label">Notes</span>
+                <span class="notes-preview">
+                  <ng-container *ngIf="job.notes && job.notes.trim().length > 0; else noNotesCard">
+                    {{ job.notes | slice : 0 : 60 }}
+                    <span *ngIf="job.notes.length > 60">…</span>
+                  </ng-container>
+                  <ng-template #noNotesCard>—</ng-template>
+                </span>
+                <button
+                  *ngIf="job.notes && job.notes.trim().length > 0"
+                  type="button"
+                  class="btn-secondary btn-chip"
+                  (click)="openNote(job)"
+                >
+                  View
+                </button>
+              </div>
+            </div>
+
+            <!-- Footer: actions -->
+            <footer class="job-card-footer">
+              <button
+                type="button"
+                class="action-edit"
+                (click)="startEdit(job)"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                class="action-delete"
+                (click)="confirmDelete(job)"
+              >
+                Delete
+              </button>
+            </footer>
+          </article>
+        </div>
+
+        <p
+          *ngIf="editError"
+          class="status-message error"
+        >
+          {{ editError }}
+        </p>
+      </section>
+
+      <section
+        *ngIf="!isLoading && jobs.length === 0 && !errorMessage"
+        class="status-message"
+      >
+        No job applications found.
+      </section>
+    </div>
+  </div>
+
+  <!-- Summary Report Modal -->
+  <div
+    *ngIf="showReportModal && report"
+    class="report-backdrop"
+    (click)="closeReport()"
+  >
+    <div
+      class="report-modal"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="report-modal-header">
+        <div>
+          <h2>{{ report.title }}</h2>
+          <p class="timestamp">
+            Generated: {{ report.generatedAt | date : 'short' }}
+          </p>
+        </div>
+        <button
+          type="button"
+          class="icon-button"
+          (click)="closeReport()"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="summary-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Job Title</th>
+              <th>Status</th>
+              <th>Applied On</th>
+              <th>Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of report.rows">
+              <td>{{ row.companyName }}</td>
+              <td>{{ row.jobTitle }}</td>
+              <td>{{ getStatusLabel(row.status) }}</td>
+              <td>{{ row.appliedOn | date : 'shortDate' }}</td>
+              <td>{{ row.location }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Application Modal -->
+  <div
+    *ngIf="showEditModal && editApp"
+    class="report-backdrop"
+    (click)="cancelEdit()"
+  >
+    <div
+      class="report-modal"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="report-modal-header">
+        <div>
+          <h2>Edit Application</h2>
+          <p class="timestamp">
+            {{ currentEditingJob?.companyName }} – {{ currentEditingJob?.jobTitle }}
+          </p>
+        </div>
+        <button
+          type="button"
+          class="icon-button"
+          (click)="cancelEdit()"
+        >
+          ✕
+        </button>
+      </div>
+
+      <form (ngSubmit)="saveEdit()" class="new-app-form">
+        <div class="field">
+          <label for="edit-company">Company *</label>
+          <input
+            id="edit-company"
+            type="text"
+            [(ngModel)]="editApp.companyName"
+            name="editCompany"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="edit-title">Job Title *</label>
+          <input
+            id="edit-title"
+            type="text"
+            [(ngModel)]="editApp.jobTitle"
+            name="editJobTitle"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="edit-status">Status</label>
+          <select
+            id="edit-status"
+            [(ngModel)]="editApp.status"
+            name="editStatus"
+          >
+            <option [ngValue]="ApplicationStatus.Applied">Applied</option>
+            <option [ngValue]="ApplicationStatus.PhoneScreen">Phone Screen</option>
+            <option [ngValue]="ApplicationStatus.Interview">Interview</option>
+            <option [ngValue]="ApplicationStatus.Offer">Offer</option>
+            <option [ngValue]="ApplicationStatus.Rejected">Rejected</option>
+            <option [ngValue]="ApplicationStatus.OnHold">On Hold</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="edit-date">Applied On</label>
+          <input
+            id="edit-date"
+            type="date"
+            [(ngModel)]="editApp.appliedOn"
+            name="editAppliedOn"
+          />
+        </div>
+
+        <div class="field">
+          <label for="edit-location">Location</label>
+          <input
+            id="edit-location"
+            type="text"
+            [(ngModel)]="editApp.location"
+            name="editLocation"
+          />
+        </div>
+
+        <div class="field">
+          <label for="edit-min-salary">Min Salary</label>
+          <div class="currency-input">
+            <span class="currency-prefix">$</span>
+            <input
+              id="edit-min-salary"
+              type="number"
+              [(ngModel)]="editApp.minSalary"
+              name="editMinSalary"
+              class="currency-input-field"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="edit-max-salary">Max Salary</label>
+          <div class="currency-input">
+            <span class="currency-prefix">$</span>
+            <input
+              id="edit-max-salary"
+              type="number"
+              [(ngModel)]="editApp.maxSalary"
+              name="editMaxSalary"
+              class="currency-input-field"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="edit-source">Source</label>
+          <input
+            id="edit-source"
+            type="text"
+            [(ngModel)]="editApp.source"
+            name="editSource"
+          />
+        </div>
+
+        <div class="field full-width">
+          <label for="edit-notes">Notes</label>
+          <textarea
+            id="edit-notes"
+            rows="3"
+            [(ngModel)]="editApp.notes"
+            name="editNotes"
+          ></textarea>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="action-edit">
+            Save
+          </button>
+          <button
+            type="button"
+            class="action-secondary"
+            (click)="cancelEdit()"
+          >
+            Cancel
+          </button>
+        </div>
+
+        <p
+          *ngIf="editError"
+          class="status-message error"
+          style="margin-top: 0.75rem;"
+        >
+          {{ editError }}
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notes Modal -->
+  <div
+    *ngIf="showNoteModal && selectedNoteJob"
+    class="report-backdrop"
+    (click)="closeNoteModal()"
+  >
+    <div
+      class="report-modal note-modal"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="report-modal-header">
+        <div>
+          <h2>Application Notes</h2>
+          <p class="timestamp">
+            {{ selectedNoteJob.companyName }} – {{ selectedNoteJob.jobTitle }}
+          </p>
+        </div>
+        <button
+          type="button"
+          class="icon-button"
+          (click)="closeNoteModal()"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="note-body">
+        <p
+          *ngIf="
+            selectedNoteJob.notes &&
+            selectedNoteJob.notes.trim().length > 0;
+            else noNoteText
+          "
+        >
+          {{ selectedNoteJob.notes }}
+        </p>
+        <ng-template #noNoteText>
+          <p class="muted">No notes saved for this application.</p>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

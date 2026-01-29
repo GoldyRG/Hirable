@@ -51,6 +51,15 @@
   position: relative;
 }
 
+.signature {
+  margin-left: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #d1fae5;
+  white-space: nowrap;
+}
+
 .nav-links a {
   font-size: 0.9rem;
   padding: 0.4rem 0.95rem;
